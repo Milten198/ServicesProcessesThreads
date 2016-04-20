@@ -12,6 +12,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -35,16 +36,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listView.setOnItemClickListener(this);
         listOfImages = getResources().getStringArray(R.array.imageUrls);
         progressBar = (ProgressBar) findViewById(R.id.downloadProgress);
+        loadingSection = (LinearLayout) findViewById(R.id.loadingSection);
     }
 
     public void downloadImage(View view) {
-        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String url = listOfImages[0];
-        Uri uri = Uri.parse(url);
-        L.s(this, uri.getLastPathSegment());
-        L.m("dupa");
-//        Thread thread = new Thread(new DownloadThread());
-//        thread.start();
+        String url = editText.getText().toString();
+        Thread thread = new Thread(new DownloadThread(url));
+        thread.start();
     }
 
     public boolean downloadImageUsingThreads(String url) {
@@ -52,20 +50,33 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         HttpURLConnection connection = null;
         URL downloadURL = null;
         InputStream inputStream = null;
+        FileOutputStream fileOutputStream = null;
+        File file = null;
         try {
             downloadURL = new URL(url);
             connection = (HttpURLConnection) downloadURL.openConnection();
             inputStream = connection.getInputStream();
+            file = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                            .getAbsolutePath() + "/" + Uri.parse(url).getLastPathSegment());
+            fileOutputStream = new FileOutputStream(file);
             int read = -1;
             byte[] buffer = new byte[1024];
             while ((read = inputStream.read(buffer)) != -1) {
-                L.m("  sada" +  read);
+                fileOutputStream.write(buffer, 0, read);
             }
+            successful = true;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            L.m(e+"");
         } catch (IOException e) {
-            e.printStackTrace();
+            L.m(e+"");
         } finally {
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loadingSection.setVisibility(View.GONE);
+                }
+            });
             if (connection != null) {
                 connection.disconnect();
             }
@@ -73,7 +84,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                     L.m(e+"");
+                }
+            }
+            if (fileOutputStream != null) {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                     L.m(e+"");
                 }
             }
         }
@@ -87,9 +105,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private class DownloadThread implements Runnable {
 
+        private String url;
+        private DownloadThread(String url) {
+            this.url = url;
+        }
+
         @Override
         public void run() {
-            downloadImageUsingThreads(listOfImages[0]);
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    loadingSection.setVisibility(View.VISIBLE);
+                }
+            });
+            downloadImageUsingThreads(url);
         }
     }
 }
