@@ -1,8 +1,10 @@
 package com.example.android.threadsimagedownloader;
 
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private String[] listOfImages;
     private ProgressBar progressBar;
     private LinearLayout loadingSection = null;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         listOfImages = getResources().getStringArray(R.array.imageUrls);
         progressBar = (ProgressBar) findViewById(R.id.downloadProgress);
         loadingSection = (LinearLayout) findViewById(R.id.loadingSection);
+        handler = new Handler();
     }
 
     public void downloadImage(View view) {
@@ -71,10 +75,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } catch (IOException e) {
             L.m(e+"");
         } finally {
-            this.runOnUiThread(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
                     loadingSection.setVisibility(View.GONE);
+                    MainActivity.this
+                            .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
                 }
             });
             if (connection != null) {
@@ -112,9 +118,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         @Override
         public void run() {
-            MainActivity.this.runOnUiThread(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    //This ode will run on the main thread
                     loadingSection.setVisibility(View.VISIBLE);
                 }
             });
