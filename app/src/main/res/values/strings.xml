@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MainActivityToThreadCommunicationExample</string>
+    <string name="send_message_go_background_thread">Send Message go Background Thread</string>
+</resources>
