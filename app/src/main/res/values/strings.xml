@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">AsyncTaskImageDownloaderExample</string>
+
+
+    <string-array name="urls">
+        <item>Image 1</item>
+        <item>Image 2</item>
+        <item>Image 3</item>
+        <item>Image 4</item>
+        <item>Image 5</item>
+        <item>Image 6</item>
+    </string-array>
+
+    <string-array name="imageUrls">
+        <item>http://www.imgbase.info/images/safe-wallpapers/anime/dragon_ball_z/6846_dragon_ball_z_hd_wallpapers.jpg</item>
+        <item>https://www.allcanplay.com/upload/game-pages/a76d256bdde3de93f75b2a926eba1187.jpg</item>
+        <item>https://images.alphacoders.com/681/681382.jpg</item>
+        <item>http://vignette3.wikia.nocookie.net/dragonball/images/3/38/FPFriezaPunchedBySSGoku(DBNP).jpg/revision/latest?cb=20140611144708</item>
+        <item>https://i.ytimg.com/vi/fh3jrQrEPQo/maxresdefault.jpg</item>
+        <item>https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg</item>
+    </string-array>
+</resources>
+
+
